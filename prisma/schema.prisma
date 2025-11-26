@@ -1,0 +1,133 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  role      UserRole @default(PATIENT)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  patient  Patient?
+  doctor   Doctor?
+  
+  @@map("users")
+}
+
+model Patient {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  name        String
+  phone       String
+  birthDate   DateTime
+  createdAt   DateTime @default(now())
+  
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appointments Appointment[]
+  prescriptions Prescription[]
+  medicalRecords MedicalRecord[]
+  
+  @@map("patients")
+}
+
+model Doctor {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  name          String
+  specialty     String
+  phone         String
+  licenseNumber String
+  createdAt     DateTime @default(now())
+  
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  schedules     DoctorSchedule[]
+  appointments  Appointment[]
+  prescriptions Prescription[]
+  medicalRecords MedicalRecord[]
+  
+  @@map("doctors")
+}
+
+model DoctorSchedule {
+  id        String   @id @default(cuid())
+  doctorId  String
+  dayOfWeek Int      // 0-6 (Domingo-Sábado)
+  startTime String   // "08:00"
+  endTime   String   // "17:00"
+  slotDuration Int   @default(30) // minutos
+  maxPatients Int    @default(1)
+  
+  doctor    Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  
+  @@map("doctor_schedules")
+}
+
+model Appointment {
+  id          String         @id @default(cuid())
+  patientId   String
+  doctorId    String
+  scheduledAt DateTime
+  status      AppointmentStatus @default(SCHEDULED)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  
+  patient     Patient        @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctor      Doctor         @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  
+  @@map("appointments")
+}
+
+model Prescription {
+  id           String   @id @default(cuid())
+  doctorId     String
+  patientId    String
+  medication   String
+  dosage       String
+  instructions String
+  createdAt    DateTime @default(now())
+  
+  doctor  Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  patient Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  
+  @@map("prescriptions")
+}
+
+model MedicalRecord {
+  id          String   @id @default(cuid())
+  patientId   String
+  doctorId    String?
+  title       String
+  description String?
+  fileUrl     String
+  fileName    String
+  fileSize    Int
+  fileType    String
+  createdAt   DateTime @default(now())
+  
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctor  Doctor? @relation(fields: [doctorId], references: [id], onDelete: SetNull)
+  
+  @@map("medical_records")
+}
+
+enum UserRole {
+  PATIENT
+  DOCTOR
+  ADMIN
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
