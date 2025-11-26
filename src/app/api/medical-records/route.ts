@@ -18,9 +18,7 @@ export async function GET(request: NextRequest) {
     console.log('🔍 Buscando exames para paciente:', patientId)
 
     const records = await prisma.medicalRecord.findMany({
-      where: { 
-        patientId 
-      },
+      where: { patientId },
       include: {
         doctor: {
           select: {
@@ -29,9 +27,7 @@ export async function GET(request: NextRequest) {
           }
         }
       },
-      orderBy: {
-        createdAt: 'desc'
-      }
+      orderBy: { createdAt: 'desc' }
     })
 
     console.log(`✅ Encontrados ${records.length} exames`)
