@@ -41,7 +41,7 @@ export default function MessagesPage() {
         {
           id: '1',
           senderId: 'doctor1',
-          receiverId: user.patient?.id || '',
+         receiverId: user?.patient?.id ?? '',
           content: 'Olá! Seus exames de sangue estão prontos. Podemos marcar uma consulta para discutir os resultados?',
           createdAt: new Date().toISOString(),
           read: true,
