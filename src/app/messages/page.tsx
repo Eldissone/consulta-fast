@@ -36,29 +36,7 @@ export default function MessagesPage() {
 
   const fetchMessages = async () => {
     try {
-      // Simular mensagens por enquanto
-      const mockMessages: Message[] = [
-        {
-          id: '1',
-          senderId: 'doctor1',
-         receiverId: user?.patient?.id ?? '',
-          content: 'Olá! Seus exames de sangue estão prontos. Podemos marcar uma consulta para discutir os resultados?',
-          createdAt: new Date().toISOString(),
-          read: true,
-          sender: { name: 'Dr. Carlos Silva', role: 'DOCTOR' }
-        },
-        {
-          id: '2',
-          senderId: user.patient?.id || '',
-          receiverId: 'doctor1',
-          content: 'Bom dia, Doutor! Sim, gostaria de marcar a consulta. Qual horário tem disponível?',
-          createdAt: new Date(Date.now() - 3600000).toISOString(),
-          read: true,
-          sender: { name: user.patient?.name || '', role: 'PATIENT' }
-        }
-      ]
-      
-      setMessages(mockMessages)
+     //em breve
     } catch (error) {
       console.error('Erro ao buscar mensagens:', error)
     } finally {
@@ -72,20 +50,8 @@ export default function MessagesPage() {
     setSending(true)
     try {
       // Simular envio de mensagem
-      const newMsg: Message = {
-        id: Date.now().toString(),
-        senderId: user.id,
-        receiverId: selectedUser,
-        content: newMessage,
-        createdAt: new Date().toISOString(),
-        read: false,
-        sender: { 
-          name: user.patient?.name || user.doctor?.name || '', 
-          role: user.role 
-        }
-      }
+     
 
-      setMessages(prev => [newMsg, ...prev])
       setNewMessage('')
       
       // Aqui você integraria com a API real
