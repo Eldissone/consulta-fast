@@ -6,12 +6,16 @@ import Link from 'next/link'
 import { useState } from 'react'
 
 export default function Header() {
-  const { user, logout, unreadCount = 0 } = useAuth()
+  const auth = useAuth()
+  const user = auth?.user
+  const unreadCount = auth?.unreadCount ?? 0
+  const logout = auth?.logout
+
   const router = useRouter()
   const [open, setOpen] = useState(false)
 
   const handleLogout = () => {
-    logout()
+    logout?.()
     router.push('/')
   }
 
@@ -109,7 +113,6 @@ export default function Header() {
             {user ? (
               <>
 
-
                 {user.role === 'PATIENT' && (
                   <>
                     <Link href="/doctors" className="link-mobile">Médicos</Link>
@@ -148,4 +151,3 @@ export default function Header() {
     </header>
   )
 }
-
