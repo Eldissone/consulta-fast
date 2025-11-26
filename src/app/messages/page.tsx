@@ -26,6 +26,7 @@ export default function MessagesPage() {
   const { user } = useAuth()
   const router = useRouter()
 
+  // 🔒 Se não estiver logado, sai fora
   useEffect(() => {
     if (!user) {
       router.push('/login')
@@ -36,7 +37,7 @@ export default function MessagesPage() {
 
   const fetchMessages = async () => {
     try {
-     //em breve
+      // Em breve API real
     } catch (error) {
       console.error('Erro ao buscar mensagens:', error)
     } finally {
@@ -46,17 +47,10 @@ export default function MessagesPage() {
 
   const sendMessage = async () => {
     if (!newMessage.trim() || !selectedUser) return
-
     setSending(true)
     try {
-      // Simular envio de mensagem
-     
-
-      setNewMessage('')
-      
-      // Aqui você integraria com a API real
       console.log('📤 Mensagem enviada:', newMessage)
-      
+      setNewMessage('')
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error)
       alert('Erro ao enviar mensagem')
@@ -78,7 +72,8 @@ export default function MessagesPage() {
     { id: 'doctor2', name: 'Dr. Ana Santos', role: 'DOCTOR', specialty: 'Pediatria' }
   ]
 
-  if (loading) {
+  // 🚫 Enquanto não tiver usuário, não renderiza nada
+  if (!user || loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-lg">Carregando mensagens...</div>
@@ -90,12 +85,8 @@ export default function MessagesPage() {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            💬 Mensagens
-          </h1>
-          <p className="text-gray-600">
-            Comunique-se com sua equipe médica
-          </p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">💬 Mensagens</h1>
+          <p className="text-gray-600">Comunique-se com sua equipe médica</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -113,12 +104,8 @@ export default function MessagesPage() {
                     selectedUser === contact.id ? 'bg-blue-100 border border-blue-300' : 'hover:bg-gray-50'
                   }`}
                 >
-                  <div className="font-medium text-gray-900">
-                    {contact.name}
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    {contact.specialty}
-                  </div>
+                  <div className="font-medium text-gray-900">{contact.name}</div>
+                  <div className="text-sm text-gray-600">{contact.specialty}</div>
                 </button>
               ))}
             </div>
@@ -142,21 +129,23 @@ export default function MessagesPage() {
                 <div className="flex-1 p-4 overflow-y-auto max-h-96">
                   <div className="space-y-4">
                     {messages
-                      .filter(msg => 
-                        (msg.senderId === selectedUser && msg.receiverId === user.id) ||
-                        (msg.senderId === user.id && msg.receiverId === selectedUser)
+                      .filter(msg =>
+                        user?.id && (
+                          (msg.senderId === selectedUser && msg.receiverId === user.id) ||
+                          (msg.senderId === user.id && msg.receiverId === selectedUser)
+                        )
                       )
                       .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
                       .map(message => (
                         <div
                           key={message.id}
                           className={`flex ${
-                            message.senderId === user.id ? 'justify-end' : 'justify-start'
+                            message.senderId === user?.id ? 'justify-end' : 'justify-start'
                           }`}
                         >
                           <div
                             className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                              message.senderId === user.id
+                              message.senderId === user?.id
                                 ? 'bg-blue-600 text-white'
                                 : 'bg-gray-200 text-gray-900'
                             }`}
@@ -164,9 +153,7 @@ export default function MessagesPage() {
                             <p className="text-sm">{message.content}</p>
                             <p
                               className={`text-xs mt-1 ${
-                                message.senderId === user.id
-                                  ? 'text-blue-200'
-                                  : 'text-gray-500'
+                                message.senderId === user?.id ? 'text-blue-200' : 'text-gray-500'
                               }`}
                             >
                               {formatDate(message.createdAt)}
@@ -177,7 +164,7 @@ export default function MessagesPage() {
                   </div>
                 </div>
 
-                {/* Input de Mensagem */}
+                {/* Input */}
                 <div className="p-4 border-t border-gray-200">
                   <div className="flex space-x-2">
                     <input
@@ -202,12 +189,8 @@ export default function MessagesPage() {
               <div className="flex-1 flex items-center justify-center">
                 <div className="text-center">
                   <div className="text-6xl mb-4">💬</div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    Selecione um contato
-                  </h3>
-                  <p className="text-gray-600">
-                    Escolha um médico para iniciar a conversa
-                  </p>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Selecione um contato</h3>
+                  <p className="text-gray-600">Escolha um médico para iniciar a conversa</p>
                 </div>
               </div>
             )}
@@ -216,4 +199,4 @@ export default function MessagesPage() {
       </div>
     </div>
   )
-}   
+}
