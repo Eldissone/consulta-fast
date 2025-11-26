@@ -93,7 +93,7 @@ export default function Header() {
             ) : (
               <>
                 <Link href="/login" className="link-nav">Entrar</Link>
-                <Link href="/register" className="btn-primary">Cadastrar</Link>
+                <Link href="/register" className="btn-primary bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Cadastrar</Link>
               </>
             )}
           </nav>
