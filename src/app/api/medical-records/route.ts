@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 
+export const dynamic = 'force-dynamic' // 🔥 força execução dinâmica
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
@@ -15,10 +17,9 @@ export async function GET(request: NextRequest) {
 
     console.log('🔍 Buscando exames para paciente:', patientId)
 
-    // USANDO O NOME CORRETO: medicalRecord (minúsculo)
     const records = await prisma.medicalRecord.findMany({
       where: { 
-        patientId: patientId 
+        patientId 
       },
       include: {
         doctor: {
